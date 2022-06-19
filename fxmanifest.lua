@@ -3,9 +3,9 @@ game 'gta5'
 
 description 'Exclusive Priority Dealership [QBCore]'
 author "Cadburry#7547"
-version '2.0'
+version '2.1'
 
-shared_script 'shared.lua'
+shared_script 'sh_config.lua'
 
 client_scripts {
     '@PolyZone/client.lua',
@@ -17,7 +17,8 @@ client_scripts {
 }
 
 server_scripts {
-    '@oxmysql/lib/MySQL.lua',
+    '@oxmysql/lib/MySQL.lua', -- oxmysql (v2.3+)
+    'sv_discord.lua',
     'server.lua'
 }
 
@@ -30,5 +31,6 @@ lua54 'yes'
 escrow_ignore {
     'client.lua',
     'server.lua',    
-    'shared.lua',
+    'sh_config.lua',
+    'sv_discord.lua',
 }

@@ -2,9 +2,9 @@
 local QBCore = exports[Config.Core.CoreName]:GetCoreObject()
 
 -- \ Function which generates plate numbers
-local function GeneratePlate()
-    local plate = Config.PlateFormat
-    local result = MySQL.Sync.fetchScalar('SELECT plate FROM '..Config.Core.VehiclesTable..' WHERE plate = ?', {plate})
+function GeneratePlate()
+    local plate = QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(2)
+    local result = MySQL.scalar.await('SELECT plate FROM '..Config.Core.VehiclesTable..' WHERE plate = ?', {plate})
     if result then
         return GeneratePlate()
     else
@@ -13,14 +13,14 @@ local function GeneratePlate()
 end
 
 -- \ Buy Vehicle
-local function BuyXVehicle(src, pData, price, vehicle, plate)
+function BuyXVehicle(src, pData, price, vehicle, plate)
     if pData.PlayerData.money['cash'] > price then
-        MySQL.Async.insert('INSERT INTO '..Config.Core.VehiclesTable..' (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {pData.PlayerData.license, pData.PlayerData.citizenid, vehicle, GetHashKey(vehicle), '{}', plate, 0})
+        MySQL.insert('INSERT INTO '..Config.Core.VehiclesTable..' (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {pData.PlayerData.license, pData.PlayerData.citizenid, vehicle, GetHashKey(vehicle), '{}', plate, 0})
         TriggerClientEvent('QBCore:Notify', src, 'Congratulations on your purchase!', 'success')
         TriggerClientEvent('cad-xvehshop:client:BuyXvehicle', src, vehicle, plate)
         pData.Functions.RemoveMoney('cash', price, 'vehicle-bought-exclusive')
     elseif pData.PlayerData.money['bank'] > price then
-        MySQL.Async.insert('INSERT INTO '..Config.Core.VehiclesTable..' (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {pData.PlayerData.license, pData.PlayerData.citizenid, vehicle, GetHashKey(vehicle), '{}', plate, 0})
+        MySQL.insert('INSERT INTO '..Config.Core.VehiclesTable..' (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {pData.PlayerData.license, pData.PlayerData.citizenid, vehicle, GetHashKey(vehicle), '{}', plate, 0})
         TriggerClientEvent('QBCore:Notify', src, 'Congratulations on your purchase!', 'success')
         TriggerClientEvent('cad-xvehshop:client:BuyXvehicle', src, vehicle, plate)
         pData.Functions.RemoveMoney('bank', price, 'vehicle-bought-exclusive')
@@ -30,12 +30,12 @@ local function BuyXVehicle(src, pData, price, vehicle, plate)
 end
 
 -- \ Discord Role Request
-local FormattedToken = "Bot "..Config.Discord.BotToken
-local function DiscordRequest(method, endpoint, jsondata)
+local BotToken = "Bot "..Config.Discord.BotToken
+function DiscordRequest(method, endpoint, jsondata)
     local data = nil
     PerformHttpRequest("https://discordapp.com/api/"..endpoint, function(errorCode, resultData, resultHeaders)
 		data = {data=resultData, code=errorCode, headers=resultHeaders}
-    end, method, #jsondata > 0 and json.encode(jsondata) or "", {["Content-Type"] = "application/json", ["Authorization"] = FormattedToken})
+    end, method, #jsondata > 0 and json.encode(jsondata) or "", {["Content-Type"] = "application/json", ["Authorization"] = BotToken})
 
     while data == nil do
         Citizen.Wait(0)
@@ -45,7 +45,7 @@ local function DiscordRequest(method, endpoint, jsondata)
 end
 
 -- \ Get player discord roles
-local function CheckPlayerRole(user, role)
+function CheckPlayerRole(user, role)
 	local discordId = nil
 	for _, id in ipairs(GetPlayerIdentifiers(user)) do
 		if string.match(id, "discord:") then
@@ -87,8 +87,8 @@ local function CheckPlayerRole(user, role)
 	end
 end
 
--- \ Get Priority of a user
-local function GetPriority(src)
+-- \ Get Priority level of a user
+exports("GetPriority", function(src)
     local pData = QBCore.Functions.GetPlayer(src)
     local priority = 0
     if Config.Discord.Enabled then
@@ -100,13 +100,13 @@ local function GetPriority(src)
             priority = 3
         end
     else
-        MySQL.Async.fetchScalar('SELECT priority FROM players WHERE license = @license', {['@license'] = pData.PlayerData.license}, function(level) 
+        MySQL.scalar('SELECT priority FROM '..Config.Core.Players..' WHERE license = ?', {pData.PlayerData.license}, function(level) 
             priority = level
         end)
     end
-    Config.Discord.Tiers[priority].name = nil
+    Wait(10)
     return priority
-end
+end)
 
 -- \ Swap vehicle sync to others
 RegisterNetEvent('cad-xvehshop:server:SwapXvehicle', function(data)
@@ -125,27 +125,34 @@ RegisterNetEvent('cad-xvehshop:server:BuyXvehicle', function(data)
     local price = QBCore.Shared.Vehicles[vehicle]['price']
     local category = QBCore.Shared.Vehicles[vehicle]['category']
     local plate = GeneratePlate()
+    local isexclusivemember = false    
     if Config.Discord.Enabled then
         if (category == "level1") and (CheckPlayerRole(src, Config.Discord.Tiers[1].name) or CheckPlayerRole(src, Config.Discord.Tiers[2].name) or CheckPlayerRole(src, Config.Discord.Tiers[3].name)) then    
-            BuyXVehicle(src, pData, price, vehicle, plate)
+            isexclusivemember = true
         elseif (category == "level2") and (CheckPlayerRole(src, Config.Discord.Tiers[2].name) or CheckPlayerRole(src, Config.Discord.Tiers[3].name)) then
-            BuyXVehicle(src, pData, price, vehicle, plate)
+            isexclusivemember = true
         elseif (category == "level3") and CheckPlayerRole(src, Config.Discord.Tiers[3].name) then
+            isexclusivemember = true        
+        end	
+        if isexclusivemember then
             BuyXVehicle(src, pData, price, vehicle, plate)
         else
-            TriggerClientEvent("QBCore:Notify", src, "You are not a exclusive member", "error")
-        end	
+            TriggerClientEvent("QBCore:Notify", src, "You dont have "..Config.ExclusiveShops[shop].Categories[category].." membership", "error")
+        end
     else
-        MySQL.Async.fetchScalar('SELECT priority FROM players WHERE license = @license', {['@license'] = pData.PlayerData.license}, function(level) 
+        MySQL.scalar('SELECT priority FROM '..Config.Core.Players..' WHERE license = ?', {pData.PlayerData.license}, function(level) 
             -- [[Here Prio is Category & level is number in SQL]]			
             if (category == "level1") and (level == 1 or level == 2 or level == 3) then
-                BuyXVehicle(src, pData, price, vehicle, plate)
+                isexclusivemember = true
             elseif (category == "level2") and (level == 2 or level == 3) then
-                BuyXVehicle(src, pData, price, vehicle, plate)
+                isexclusivemember = true
             elseif (category == "level3") and (level == 3) then              
+                isexclusivemember = true
+            end
+            if isexclusivemember then
                 BuyXVehicle(src, pData, price, vehicle, plate)
             else
-                TriggerClientEvent("QBCore:Notify", src, "You are not a exclusive member", "error")
+                TriggerClientEvent("QBCore:Notify", src, "You dont have "..Config.ExclusiveShops[shop].Categories[category].." membership", "error")
             end
         end)
     end    
@@ -157,7 +164,7 @@ if not Config.Discord.Enabled then
         local Self = QBCore.Functions.GetPlayer(source)
         local xPlayer = QBCore.Functions.GetPlayer(tonumber(args[1]))
         if args[1] ~= nil or args[2] ~= nil then
-            MySQL.Async.execute('UPDATE players SET priority = @priority WHERE license = @license', {['license']  = xPlayer.PlayerData.license,['priority'] = tonumber(args[2])})				
+            MySQL.update('UPDATE '..Config.Core.Players..' SET priority = ? WHERE license = ?', {tonumber(args[2]), xPlayer.PlayerData.license})				
             TriggerClientEvent("QBCore:Notify", source, "Given Priority to ["..args[1].."] ")
             TriggerClientEvent("QBCore:Notify", args[1], "You were given Priority of level: ["..args[2].."].")	
         else

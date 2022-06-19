@@ -1,7 +1,7 @@
 Config = {}
 
 -- \ Use Target
-Config.TargetEnabled = true -- [qb-target] 
+Config.TargetEnabled = true           -- default: qb-target 
 
 -- \ Core Config
 Config.Core = {
@@ -12,23 +12,6 @@ Config.Core = {
     Players = 'players',              -- default: players
     VehiclesTable = 'player_vehicles',-- default: player_vehicles
 }
-
--- \ Discord Priority
-Config.Discord = {
-    Enabled = false, -- Enable/Disable Discord Integration
-	BotToken = "",   -- Discord Bot Token
-	ServerId = "",   -- Discord Server Id
-	Tiers = {        -- Discord Role Tiers
-        [1] = {name= "Bronze", roleid = ""}, -- Role Name | Role Id
-        [2] = {name= "Silver", roleid = ""}, -- Role Name | Role Id
-        [3] = {name= "Gold", roleid = ""}    -- Role Name | Role Id
-	},
-}
-
--- \ Plate Config
--- Dont Change if you dont know what you are doing
-local QBCore = exports[Config.Core.CoreName]:GetCoreObject()
-Config.PlateFormat = QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(2)
 
 -- \ Exclusive Shops
 Config.ExclusiveShops = {
@@ -63,8 +46,8 @@ Config.ExclusiveShops = {
         DisplayVehicles = {  -- Vehicles to display (also used to swap vehicle)
             [1] = {
                 coords = vector4(-75.91, 74.98, 71.3, 237.18), -- Vehicle Spawn Location
-                defaultVehicle = 'police', -- Default Vehicle (chnage this)
-                chosenVehicle = 'police', -- Chosen Vehicle (change this)
+                defaultVehicle = 'sultan', -- Default Vehicle (change this)
+                chosenVehicle = 'sultan', -- Chosen Vehicle (change this)
             },
         }
     }

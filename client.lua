@@ -273,7 +273,7 @@ RegisterNetEvent('cad-xvehshop:client:TestDriveReturn', function()
     end
 end)
 
--- \ Provide vehicle for testdrive
+-- \ Show all levels of Xvehicle shop
 RegisterNetEvent('cad-xvehshop:client:SwapXvehCategoryMain', function()
     local categoryMenu = {
         {
@@ -283,7 +283,7 @@ RegisterNetEvent('cad-xvehshop:client:SwapXvehCategoryMain', function()
             }
         }
     }
-    for k,v in pairs(Config.ExclusiveShops[GetInsideShopInfo()].Categories) do
+    for k, v in pairs(Config.ExclusiveShops[GetInsideShopInfo()].Categories) do
         categoryMenu[#categoryMenu + 1] = {
             header = v,
             params = {
@@ -297,6 +297,7 @@ RegisterNetEvent('cad-xvehshop:client:SwapXvehCategoryMain', function()
     exports[Config.Core.MenuName]:openMenu(categoryMenu)
 end)
 
+-- \ Swap XVehicle category in Xvehicle shop
 RegisterNetEvent('cad-xvehshop:client:SwapXvehCategories', function(data)
     local vehicleMenu = {
         {
@@ -326,6 +327,7 @@ RegisterNetEvent('cad-xvehshop:client:SwapXvehCategories', function(data)
     exports[Config.Core.MenuName]:openMenu(vehicleMenu)
 end)
 
+-- \ Swap Xvehicle in Xvehicle shop
 RegisterNetEvent('cad-xvehshop:client:SwapXvehicle', function(data)
     local shopName = data.ClosestShop
     if Config.ExclusiveShops[shopName].DisplayVehicles[data.ClosestVehicle].chosenVehicle ~= data.toVehicle then
@@ -368,8 +370,7 @@ RegisterNetEvent('cad-xvehshop:client:BuyXvehicle', function(vehicle, plate)
     end, Config.ExclusiveShops[GetInsideShopInfo()].VehicleSpawn, true)
 end)
 
--- Threads
-
+-- \ Shops blips
 CreateThread(function()
     for k, v in pairs(Config.ExclusiveShops) do
         if v.showBlip then
@@ -386,6 +387,7 @@ CreateThread(function()
     end
 end)
 
+-- \ Display vehicles in shop
 CreateThread(function()
     for k in pairs(Config.ExclusiveShops) do
         for i = 1, #Config.ExclusiveShops[k].DisplayVehicles do

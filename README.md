@@ -17,7 +17,7 @@ Three Priority Tiers Level 1 ,2 ,3
 * qb-menu
 * PolyZone
 * qb-target (optional)
-* Breze Benefactor MLO (Credits Breze) ([Download](https://forum.cfx.re/t/mlo-benefactor-car-dealer-breze/1234653))
+* Breze Benefactor MLO (Credits Breze) ([Download](https://forum.cfx.re/t/mlo-benefactor-car-dealer-breze/1234653)) ([Direct Download](https://forum.cfx.re/uploads/short-url/aoZmDPTharx876uLm7f6EEFdzdP.rar))
   **Note:** You can use your own mlo by just configuring the zones, coords in `shared.lua`
 
 # 📸 Preview
