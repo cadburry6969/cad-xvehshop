@@ -15,7 +15,7 @@
 
 # 📸 Preview
 
-> [Click Here](https://www.youtube.com/watch?v=MWqYTLxGEa8&list=PLQoW74-YZZxlGglus44ZWcxKL-7Z45aPL)
+> [Click Here](https://youtu.be/M981Xg6KAUE)
 
 
 # 🛈 Instructions (DISCORD)
