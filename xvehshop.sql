@@ -1,2 +1,2 @@
-ALTER TABLE `players`
-	ADD `priority` int(3) NULL DEFAULT '0';
+ALTER TABLE `players` 
+    ADD `priority` longtext DEFAULT NULL;

@@ -1,11 +1,12 @@
 fx_version 'cerulean'
 game 'gta5'
+lua54 'yes'
 
-description 'Exclusive Priority Dealership [QBCore]'
+description 'Exclusive Priority Dealership'
 author "Cadburry#7547"
-version '2.1'
+version '3.0'
 
-shared_script 'sh_config.lua'
+shared_script 'config.lua'
 
 client_scripts {
     '@PolyZone/client.lua',
@@ -13,24 +14,29 @@ client_scripts {
     '@PolyZone/EntityZone.lua',
     '@PolyZone/CircleZone.lua',
     '@PolyZone/ComboZone.lua',
-    'client.lua'
+    'nui/init.lua',
+    'client/*.lua'
 }
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua', -- oxmysql (v2.3+)
-    'sv_discord.lua',
-    'server.lua'
+    'config_discord.lua',
+    'server/*.lua'
 }
 
-server_exports {
-    "GetPriority",
+files {
+    'nui/*',
 }
 
-lua54 'yes'
+ui_page 'nui/index.html'
+
+dependencies {
+    '/onesync',
+}
 
 escrow_ignore {
-    'client.lua',
-    'server.lua',    
-    'sh_config.lua',
-    'sv_discord.lua',
+    'config_discord.lua',
+    'config.lua',
+    'client/*.lua',
+    'server/*.lua',
 }
