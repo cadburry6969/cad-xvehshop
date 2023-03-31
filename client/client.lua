@@ -341,7 +341,7 @@ RegisterNetEvent('cad-xvehshop:client:SwapXvehicle', function(data)
         SetEntityHeading(veh, Config.ExclusiveShops[shopName].DisplayVehicles[data.ClosestVehicle].coords.w)
         SetVehicleDoorsLocked(veh, 3)
         FreezeEntityPosition(veh, true)
-        SetVehicleNumberPlateText(veh, Config.ExclusiveShops[k].DisplayPlate)
+        SetVehicleNumberPlateText(veh, Config.ExclusiveShops[shopName].DisplayPlate)
     end
 end)
 
